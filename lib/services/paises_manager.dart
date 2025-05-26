@@ -5,7 +5,7 @@ import 'package:lista_paises/models/pais.dart';
 
 class PaisesManager {
   Future<List<Pais>> obterPaises() async {
-    var url = Uri.https('https://restcountries.com/', '/v3.1/all', {'fields': 'name,flags'});
+    var url = Uri.https('restcountries.com', '/v3.1/all', {'fields': 'name,flags'});
 
     var response = await http.get(url);
     if (response.statusCode == 200) {
