@@ -60,12 +60,16 @@ class _MyHomePageState extends State<MyHomePage> {
       _paisesCarregados = paises.sublist(0, _quantidadePorCarregamento);
       _quantidadeDeCarrementos++;
     });
+    
+    _checarSePreencheuTela();
   }
 
   _carregarPaises() async {
     if (_isLoading) return;
-    if (_quantidadeDeCarrementos * _quantidadePorCarregamento >= _paises.length) return;
-    
+    if (_quantidadeDeCarrementos * _quantidadePorCarregamento >= _paises.length) {
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -81,6 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
       _paisesCarregados.addAll(_paises.sublist(inicio, fim));
       _quantidadeDeCarrementos++;
       _isLoading = false;
+    });
+    _checarSePreencheuTela();
+  }
+
+  // Verifica se lista preencheu tela (em telas maiores, se a lista inicial for pequena não tem o scroll para disparar o lazy load)
+  void _checarSePreencheuTela() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.position.maxScrollExtent == 0 &&
+          _paisesCarregados.length < _paises.length) {
+        _carregarPaises();
+      }
     });
   }
 
@@ -116,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 50,
                     fit: BoxFit.cover,
                   ),
-                  title: Text(_paisesCarregados[index].nome)
+                  title: Text(_paisesCarregados[index].nome),
                 );
               },
             ),
