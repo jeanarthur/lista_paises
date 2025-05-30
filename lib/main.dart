@@ -132,9 +132,69 @@ class _MyHomePageState extends State<MyHomePage> {
                     fit: BoxFit.cover,
                   ),
                   title: Text(_paisesCarregados[index].nome),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PaisDetalhesPage(pais: _paisesCarregados[index]),
+                      ),
+                    );
+                  },
                 );
               },
             ),
+    );
+  }
+}
+
+class PaisDetalhesPage extends StatelessWidget {
+  final Pais pais;
+  const PaisDetalhesPage({super.key, required this.pais});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(pais.nome),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Image.network(
+              pais.imagemUrl,
+              width: 150,
+              height: 150,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              pais.nome,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Text(
+              'Capital: ${pais.capital}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              'Região: ${pais.regiao}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              'População: ${pais.populacao}',
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
