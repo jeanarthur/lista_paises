@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lista_paises/models/pais.dart';
+import 'package:lista_paises/services/ipaises_manager.dart';
 import 'package:lista_paises/services/paises_manager.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(paisesManager: PaisesManager()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final IPaisesManager paisesManager;
+  const MyApp({super.key, required this.paisesManager});
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +18,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page', paisesManager: paisesManager),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key, required this.title, required IPaisesManager this.paisesManager});
 
   final String title;
-
+  final IPaisesManager paisesManager;
+  
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -53,11 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   _cargaInicial() async {
-    var paisesManager = PaisesManager();
+    var paisesManager = widget.paisesManager;
     var paises = await paisesManager.obterPaises();
     setState(() {
       _paises = paises;
-      _paisesCarregados = paises.sublist(0, _quantidadePorCarregamento);
+      _paisesCarregados = paises.length >= _quantidadePorCarregamento ? paises.sublist(0, _quantidadePorCarregamento) : paises;
       _quantidadeDeCarrementos++;
     });
     
@@ -125,11 +128,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }
                 return ListTile(
-                  leading: Image.network(
-                    _paisesCarregados[index].imagemUrl,
+                  leading: SizedBox(
                     width: 50,
                     height: 50,
-                    fit: BoxFit.cover,
+                    child: Image.network(
+                      _paisesCarregados[index].imagemUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.flag),
+                    ),
                   ),
                   title: Text(_paisesCarregados[index].nome),
                   onTap: () {
@@ -163,11 +169,14 @@ class PaisDetalhesPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Image.network(
-              pais.imagemUrl,
-              width: 150,
-              height: 150,
-              fit: BoxFit.contain,
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: Image.network(
+                pais.imagemUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.flag),
+              ),
             ),
             const SizedBox(height: 16.0),
             Text(
